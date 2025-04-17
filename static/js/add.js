@@ -42,14 +42,17 @@ submitButton.addEventListener("click", () => {
         Logo: logo.name
     }
 
+    const formData = new FormData();
+    formData.append('data', JSON.stringify(row));
+    formData.append('file', logo)
+
     // create request and turn JS Object into JSON
     const request = new Request("/companies", {
         method: "POST",
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(row),
-        logo: logo // probably should fix this
+        body: formData,
     });
 
     // query flask and await response
