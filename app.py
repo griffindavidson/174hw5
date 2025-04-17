@@ -1,7 +1,6 @@
-from flask import Flask, request, jsonify, abort, send_file, render_template
+from flask import Flask, request, jsonify, abort, send_file, render_template, request
 from methods import openFile, checkJSONHeaders
 import os
-
 
 app = Flask(__name__)
 
@@ -51,7 +50,7 @@ def add_company():
     # Validate required fields
     # Add the new company to the JSON data
     # Save the updated data back to the file
-    pass
+    abort(400);
 
 @app.route('/add-company')
 def add():
