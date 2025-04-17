@@ -27,43 +27,57 @@ submitButton.addEventListener("click", () => {
         .filter(value => value.trim() !== '');
     const revenue = document.getElementById('revenue').value;
     const homepage = document.getElementById('homepage').value;
-    const file = document.getElementById('logo');
-    const logo = file.files[0];
+    const file = document.getElementById('logo').files[0];
 
-    // create JavaScript Object
-    const row = {
-        Company: name,
-        Services: services,
-        Hubs: {
-            Hub: hubs
-        },
-        Revenue: "$" + revenue,
-        HomePage: homepage,
-        Logo: logo.name
-    }
+    fileToBase64(file)
+        .then(string => {
+            const body = {
+                row: {
+                    Company: name,
+                    Services: services,
+                    Hubs: {
+                        Hub: hubs
+                    },
+                    Revenue: "$" + revenue,
+                    HomePage: homepage,
+                    Logo: file.name
+                },
+                file: string
+            }
 
-    const formData = new FormData();
-    formData.append('data', JSON.stringify(row));
-    formData.append('file', logo)
+             // create request and turn JS Object into JSON
+            const request = new Request("/companies", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(body),
+            });
 
-    // create request and turn JS Object into JSON
-    const request = new Request("/companies", {
-        method: "POST",
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: formData,
-    });
+            // query flask and await response
+            fetch(request)
+                .then(response => response.json())
+                .then(data => {
+                    // do something with response
+                    if (data.success) {
+                        console.log(data.success);
+                    } else {
+                        console.log(data);
+                        console.log("ELSE BLOCK RAN")
+                    }
 
-    // query flask and await response
-    fetch(request)
-        .then(response => response.json())
-        .then(data => {
-            // do something with response
-
-
+                })
+                .catch(error => console.error("Error: ", error));
         })
-        .catch(error => console.error("Error: ", error));
-
-    
+        .catch(error => console.error("Error: ", error));    
 });
+
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = () => resolve(reader.result);  // On success, resolve with base64
+        reader.onerror = () => reject(new Error("Failed to read file"));  // Reject if an error occurs
+        reader.readAsDataURL(file);  // Start reading the file as base64
+    });
+}

@@ -1,6 +1,8 @@
-from flask import Flask, request, jsonify, abort, send_file, render_template, request
-from methods import openFile, checkJSONHeaders
+from flask import Flask, request, jsonify, abort, send_file, render_template, request # type: ignore
+from methods import openFile, checkJSONHeaders, convertBase64ToImage
 import os
+import json
+import base64
 
 app = Flask(__name__)
 
@@ -50,7 +52,31 @@ def add_company():
     # Validate required fields
     # Add the new company to the JSON data
     # Save the updated data back to the file
-    abort(400);
+
+    # Read JSON from Request body
+    data = request.get_json()
+    row = data['row']
+    fileBase64 = data['file']
+
+    # Reads, Validates, and saves logo file
+    convertBase64ToImage(fileBase64, row['Logo'])
+
+    # Read and validate existing data
+    jsonData = openFile(file_path, 'r')
+    checkJSONHeaders(jsonData)
+
+    # append new row to json
+    jsonData['Mainline']['Table']['Row'].append(row)
+
+    # save new JSON to file
+    try:
+        with open(file_path, 'w') as file:
+            json.dump(jsonData, file, indent=4)
+    except Exception as e:
+        abort(500)
+
+    # return successful response
+    return jsonify({"success": "Data Successfully added"})
 
 @app.route('/add-company')
 def add():

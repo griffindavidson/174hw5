@@ -1,5 +1,5 @@
 from flask import jsonify, abort
-import json
+import json, base64, os
 
 def openFile(path, privileges):
 
@@ -20,5 +20,22 @@ def checkJSONHeaders(jsonData):
 
     if 'Row' not in jsonData['Mainline']['Table']:
         abort(500)
+
+def convertBase64ToImage(base64_str, filename):
+    if base64_str.startswith('data:image'):
+        # Split out the header if included
+        header, base64_str = base64_str.split(',', 1)
+
+    try:
+        # Decode the base64 string
+        image_data = base64.b64decode(base64_str)
+
+        # Save to file (you can change the directory as needed)
+        with open(filename, 'wb') as f:
+            f.write(image_data)
+
+    except Exception as e:
+        print("Failed to decode and save image:", e)
+        return jsonify({"Error": "Failed to save image"}), abort(500)
 
         
