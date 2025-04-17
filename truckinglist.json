@@ -89,19 +89,6 @@
                     "Revenue": "$3,334",
                     "HomePage": "http://www.swifttrans.com/",
                     "Logo": "swift.png"
-                },
-                {
-                    "Company": "Amazon",
-                    "Services": "Amazon Prime",
-                    "Hubs": {
-                        "Hub": [
-                            "123 Amazon Way, Seattle, Washington, U.S.",
-                            "Amazon is the largest digital retailer in the world"
-                        ]
-                    },
-                    "Revenue": "$$287,186",
-                    "HomePage": "https://www.amazon.com",
-                    "Logo": "amazon.jpg"
                 }
             ]
         }

@@ -38,9 +38,9 @@ submitButton.addEventListener("click", () => {
                     Hubs: {
                         Hub: hubs
                     },
-                    Revenue: "$" + revenue,
+                    Revenue: revenue ? "$" + revenue : "",
                     HomePage: homepage,
-                    Logo: file.name
+                    Logo:  file ? file.name : ""
                 },
                 file: string
             }
@@ -61,11 +61,11 @@ submitButton.addEventListener("click", () => {
                     // do something with response
                     if (data.success) {
                         console.log(data.success);
+                        showToast("success", data.success);
                     } else {
-                        console.log(data);
-                        console.log("ELSE BLOCK RAN")
+                        console.error(data.error);
+                        showToast("error", data.error);
                     }
-
                 })
                 .catch(error => console.error("Error: ", error));
         })
@@ -74,10 +74,42 @@ submitButton.addEventListener("click", () => {
 
 function fileToBase64(file) {
     return new Promise((resolve, reject) => {
+        if (!file) { 
+            resolve("") // return empty string if no file present
+            return;
+        } 
+
         const reader = new FileReader();
 
         reader.onload = () => resolve(reader.result);  // On success, resolve with base64
         reader.onerror = () => reject(new Error("Failed to read file"));  // Reject if an error occurs
         reader.readAsDataURL(file);  // Start reading the file as base64
     });
+}
+
+function showToast(state, message) {
+    const toast = document.createElement('div');
+    toast.style.display = 'flex';
+    toast.style.position = 'fixed';
+    toast.style.bottom = '5px';
+    toast.style.left = '5px';
+    toast.style.width = 'fit-content';
+    toast.style.height = 'fit-content';
+    toast.style.color = 'white';
+    toast.style.padding = '1rem';
+    toast.style.borderRadius = '1rem';
+
+    if (state === "success") {
+        toast.innerText = "Company successfully added!";
+        toast.style.backgroundColor = 'lime';
+    } else {
+        toast.innerText = "Error: " + message;
+        toast.style.backgroundColor = 'red';
+    }
+
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        document.body.removeChild(toast);
+    }, 5000);
 }

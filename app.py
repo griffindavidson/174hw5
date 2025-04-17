@@ -35,8 +35,7 @@ def get_company(name):
     companies = json['Mainline']['Table']['Row']
 
     for company in companies:
-        if company['Company'] == name or \
-           os.path.splitext(company['Logo'])[0] == name:
+        if company['Company'] == name:
 
            # overwrites copy, not actual JSON file
             json['Mainline']['Table']['Row'] = [company]
@@ -58,15 +57,31 @@ def add_company():
 
     # Read JSON from Request body
     data = request.get_json()
-    row = data['row']
-    fileBase64 = data['file']
+    row = ""
+    fileBase64 = ""
 
-    # Reads, Validates, and saves logo file
-    convertBase64ToImage(fileBase64, row['Logo'])
+    # Determine if an image is sent or not, or just the raw row data
+    if 'row' not in data: 
+        row = data
+    else:
+        row = data['row']
+        # Reads, Validates, and saves logo file
+        if 'file' in data and data['file']: # runs if file is uploaded
+            fileBase64 = data['file']
+            convertBase64ToImage(fileBase64, row['Logo'])
 
     # Read and validate existing data
     jsonData = openFile(file_path, 'r')
     checkJSONHeaders(jsonData)
+
+    # Requires at least company name given
+    if not row['Company']:
+        abort(400, description="Company Name required")
+
+    # Prevents duplicate entries
+    for company in jsonData['Mainline']['Table']['Row']:
+        if company['Company'] == row['Company']:
+            abort(400, description="Company already exists")
 
     # append new row to json
     jsonData['Mainline']['Table']['Row'].append(row)
@@ -107,7 +122,7 @@ def not_found(error):
 
 @app.errorhandler(400)
 def bad_request(error):
-    return jsonify({'error': 'Bad request'}), 400
+    return jsonify({'error': error.description if hasattr(error, 'description') else 'Bad request'}), 400
 
 @app.errorhandler(500)
 def server_error(error):
