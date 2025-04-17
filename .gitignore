@@ -3,3 +3,4 @@ venv/*
 venv/bin/
 venv/bin/activate
 .DS_Store
+*.pyc
