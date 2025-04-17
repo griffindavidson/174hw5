@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Company | Homework 5</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/add.css') }}">
+    <script src="{{ url_for('static', filename='js/add.js') }}" defer></script>
+</head>
+<body>
+    <h2>Add New Company</h2>
+
+    <div class="inputs">
+        <label for="name">Company Name: </label>
+        <input type="text" placeholder="Company Name" id="name">
+
+        <label for="services">Services: </label>
+        <input type="text" placeholder="Subbrands..." id="services">
+
+        <label for="hubs">Hubs: </label>
+        <div id="hubs" class="hubs">
+            <div class="addresses" id="addresses">
+                <input type="text" name="address" placeholder="123 Park Way, Atlanta, Georgia, U.S.">
+            </div>
+            <button type="button" onclick="addAddress()">Add Another Address</button>
+        </div>
+
+        <label for="revenue">Annual Revenue: </label>
+        <input type="text" placeholder="$ million" id="revenue">
+
+        <label for="homepage">Home Page: </label>
+        <input type="url" placeholder="https://example.com" id="homepage">
+
+        <label for="logo">Logo: </label>
+        <input type="file" id="logo">
+    </div>
+
+    <div class="button-container">
+        <button id="submit">Submit</button>
+    </div>
+
+</body>
+</html>
