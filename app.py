@@ -52,23 +52,18 @@ def add_company():
     # Add the new company to the JSON data
     # Save the updated data back to the file
 
-    # TODO: thoroughly validate fields, and
-    #   allow fields to be empty
-
     # Read JSON from Request body
     data = request.get_json()
     row = ""
-    fileBase64 = ""
 
     # Determine if an image is sent or not, or just the raw row data
     if 'row' not in data: 
         row = data
     else:
         row = data['row']
-        # Reads, Validates, and saves logo file
         if 'file' in data and data['file']: # runs if file is uploaded
-            fileBase64 = data['file']
-            convertBase64ToImage(fileBase64, row['Logo'])
+            # Reads, Validates, and saves logo file
+            convertBase64ToImage(data['file'], row['Logo'])
 
     # Read and validate existing data
     jsonData = openFile(file_path, 'r')
@@ -90,12 +85,13 @@ def add_company():
     try:
         with open(file_path, 'w') as file:
             json.dump(jsonData, file, indent=4)
-    except Exception as e:
+    except Exception:
         abort(500)
 
     # return successful response
     return jsonify({"success": "Data Successfully added"})
 
+# Front-end for POST /companies
 @app.route('/add-company')
 def add():
     return render_template("add.html")
@@ -106,14 +102,68 @@ def update_company(name):
     # Read update data from request
     # Find and update the specified company
     # Save the updated data back to the file
-    pass
+
+    data = openFile(file_path, 'r')
+    checkJSONHeaders(data)
+
+    for i, rows in enumerate(data['Mainline']['Table']['Row']):
+        if rows['Company'] == name:
+            body = request.get_json()
+            entry = data['Mainline']['Table']['Row'][i]
+
+            # Check each legal entry and if applicable update
+            if 'Company' in body:
+                entry['Company'] = body['Company']
+
+            if 'HomePage' in body:
+                entry['HomePage'] = body['HomePage']
+
+            if 'Hubs' in body and 'Hub' in body['Hubs']:
+                entry['Hubs']['Hub'] = body['Hubs']['Hub']
+
+            if 'Logo' in body:
+                entry['Logo'] = body['Logo']
+
+            if 'Revenue' in body:
+                entry['Revenue'] = body['Revenue']
+
+            if 'Services' in body:
+                entry['Services'] = body['Services']
+
+            # Save modified JSON back to file
+            try:
+                with open(file_path, 'w') as file:
+                    json.dump(data, file, indent=4)
+            except Exception:
+                abort(500)
+
+            return jsonify({"success": "Successfully updated " + entry['Company']})
+
+    abort(400, description="Company does not exist")
 
 # DELETE a trucking company
 @app.route('/companies/<string:name>', methods=['DELETE'])
 def delete_company(name):
     # Locate and delete the specified company
     # Save the updated data back to the file
-    pass
+
+    data = openFile(file_path, 'r')
+    checkJSONHeaders(data)
+    rows = data['Mainline']['Table']['Row']
+
+    for i, company in enumerate(rows):
+        if company['Company'] == name:
+            del rows[i]
+
+            try:
+                with open(file_path, 'w') as file:
+                    json.dump(data, file, indent=4)
+            except Exception:
+                abort(500)
+
+            return jsonify({"success": "Successfully deleted " + name})
+
+    abort(400, description="Company does not exist")
 
 # Error handlers (optional to implement in their section)
 @app.errorhandler(404)
