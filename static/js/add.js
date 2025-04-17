@@ -53,7 +53,7 @@ submitButton.addEventListener("click", () => {
     });
 
     // query flask and await response
-    fetch('/companies')
+    fetch(request)
         .then(response => response.json())
         .then(data => {
             // do something with response
