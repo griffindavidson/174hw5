@@ -53,6 +53,9 @@ def add_company():
     # Add the new company to the JSON data
     # Save the updated data back to the file
 
+    # TODO: thoroughly validate fields, and
+    #   allow fields to be empty
+
     # Read JSON from Request body
     data = request.get_json()
     row = data['row']
