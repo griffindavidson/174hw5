@@ -1,4 +1,4 @@
-from flask import jsonify, abort
+from flask import jsonify, abort # type: ignore
 import json, base64, os
 
 def openFile(path, privileges):
