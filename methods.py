@@ -8,7 +8,7 @@ def openFile(path, privileges):
             data = json.load(file)
             return data
     except:
-        abort(500, description="JSON file missing - id: of1")
+        abort(500, description="JSON file missing")
 
 def checkJSONHeaders(jsonData):
     if 'Mainline' not in jsonData or \
@@ -16,10 +16,10 @@ def checkJSONHeaders(jsonData):
         'Header' not in jsonData['Mainline']['Table'] or \
         'Data' not in jsonData['Mainline']['Table']['Header'] or \
         not jsonData['Mainline']['Table']['Header']['Data']:
-            abort(500, description="JSON file missing - id: ck1")
+            abort(500, description="JSON file corrupted")
 
     if 'Row' not in jsonData['Mainline']['Table']:
-        abort(500, description="JSON file missing - id: ck2")
+        abort(500, description="JSON file corrupted")
 
 def convertBase64ToImage(base64_str, filename):
     if base64_str.startswith('data:image'):

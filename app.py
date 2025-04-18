@@ -42,7 +42,7 @@ def get_company(name):
             
             return json
 
-    abort(404, description="Company not found - id: gs1")
+    abort(404, description="Company not found")
 
 # POST a new trucking company
 @app.route('/companies', methods=['POST'])
@@ -71,12 +71,12 @@ def add_company():
 
     # Requires at least company name given
     if not row['Company']:
-        abort(400, description="Company Name required - id: po1")
+        abort(400, description="Company Name required")
 
     # Prevents duplicate entries
     for company in jsonData['Mainline']['Table']['Row']:
         if company['Company'] == row['Company']:
-            abort(400, description="Company already exists - id: po2")
+            abort(400, description="Company already exists")
 
     # append new row to json
     jsonData['Mainline']['Table']['Row'].append(row)
@@ -86,7 +86,7 @@ def add_company():
         with open(file_path, 'w') as file:
             json.dump(jsonData, file, indent=4)
     except Exception:
-        abort(500, description="JSON file doesn't exist - id: po3")
+        abort(500, description="JSON file missing")
 
     # return successful response
     return jsonify({"success": "Data Successfully added"})
@@ -135,11 +135,11 @@ def update_company(name):
                 with open(file_path, 'w') as file:
                     json.dump(data, file, indent=4)
             except Exception:
-                abort(500, description="JSON file not found - id: p1")
+                abort(500, description="JSON file missing")
 
             return jsonify({"success": "Successfully updated " + entry['Company']})
 
-    abort(400, description="Company not found - id: p2")
+    abort(404, description="Company not found")
 
 # DELETE a trucking company
 @app.route('/companies/<string:name>', methods=['DELETE'])
@@ -163,7 +163,7 @@ def delete_company(name):
 
             return jsonify({"success": "Successfully deleted " + name})
 
-    abort(400, description="Company not found")
+    abort(404, description="Company not found")
 
 # Error handlers (optional to implement in their section)
 @app.errorhandler(404)
