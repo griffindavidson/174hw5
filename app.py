@@ -69,11 +69,26 @@ def add_company():
     jsonData = openFile(file_path, 'r')
     checkJSONHeaders(jsonData)
 
-    # Requires at least company name given
+    # Requires all fields given
     if not row['Company']:
         abort(400, description="Company Name required")
 
-    # Prevents duplicate entries
+    if not row['HomePage']:
+        abort(400, description="Company HomePage required")
+
+    if not row['Hub']['Hubs']:
+        abort(400, description="Company Hub required")
+
+    if not row['Logo']:
+        abort(400, description="Company logo required")
+
+    if not row['Revenue']:
+        abort(400, description="Company Revenue required")
+
+    if not row['Services']:
+        abort(400, description="Company Services required")
+
+    # Prevents duplicate entries keyed on company name
     for company in jsonData['Mainline']['Table']['Row']:
         if company['Company'] == row['Company']:
             abort(400, description="Company already exists")
